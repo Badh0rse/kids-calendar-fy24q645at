@@ -294,6 +294,65 @@ button{transition:background-color .12s,transform .08s}
 @media (max-height:760px){
   .grid{grid-auto-rows:minmax(52px,1fr)}
 }
+
+/* Question screens use the whole height when space is tight. */
+@media (max-width:560px),(max-height:820px){
+  #app.quiz .scene{display:none}
+}
+@media (max-height:820px){
+  .gday{height:46px}
+  .q{gap:10px}
+}
+@media (max-width:560px){
+  .q{gap:8px}
+  .ask{font-size:26px}
+  .star{width:36px;height:36px;font-size:20px}
+  .gmonth{font-size:22px}
+  .gday{height:42px;font-size:22px}
+  .fb{min-height:52px;font-size:19px}
+  .fb .btn{min-height:48px;padding:4px 18px;font-size:22px}
+}
+/* Phone held sideways: drop the picture band and slim the bars. */
+@media (max-height:500px){
+  .scene{display:none}
+  #main{padding-block:4px}
+  nav{padding-block:3px;gap:6px}
+  nav button{height:40px;flex-direction:row;gap:6px;font-size:15px}
+  nav button i{font-size:18px}
+  #vol{padding-block:2px}
+  #vol button{min-height:34px;font-size:15px;padding:0 10px}
+  #volRange{height:34px}
+  #pop{bottom:92px}
+  #app.road #pop{top:calc(4px + env(safe-area-inset-top,0px))}
+  .day{width:250px;padding:8px}
+  .rhead{flex-wrap:nowrap;font-size:15px}
+  .rhead b{flex:0 1 auto;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rhead span{font-size:15px}
+  .rbar{height:6px;margin-block:2px}
+  .rhintrow{min-height:26px;margin-bottom:2px}
+  .rhintrow .say{display:none}
+  .rhint{font-size:18px}
+  .rctl{padding-top:4px}
+  .rctl button{height:46px;font-size:18px}
+  #pedal{font-size:26px}
+  #pedal.wait{font-size:20px}
+  .ask{font-size:24px}
+  .mrow .arrow{height:44px;width:60px}
+  .mtitle h1{font-size:28px}
+  .mtitle p{display:none}
+}
+@media (max-height:500px) and (max-width:560px){
+  .rhead span:not(#rgift){display:none}
+}
+/* Very small phones. */
+@media (max-width:360px){
+  .mtitle h1{font-size:26px}
+  .mrow .arrow{width:48px}
+  .grid,.gcal,.days,.dow{gap:3px}
+  .days .tile{padding:2px;font-size:20px}
+  .months .tile{font-size:18px;gap:4px;padding:4px}
+  #vol button{padding:0 8px;font-size:15px}
+}
 </style>
 
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#A8451A"><link rel="manifest" href="manifest.webmanifest"></head><body>
@@ -760,7 +819,7 @@ const views={
    return `<div class="q"><h1 class="ask">Birthday Game</h1>
     <p class="note" style="font-size:22px">5 questions. No timer. You can try again as many times as you want.</p>
     <div class="row"><button class="btn" data-a="startGame" style="min-width:220px">Start</button></div>
-    ${withBday().length?'':'<p class="note">The game has holidays now. <button data-a="go" data-v="people" style="text-decoration:underline;font-weight:700">Add birthdays</button> to play with your family and friends.</p>'}
+    ${withBday().length?'':'<p class="note">The game has holidays now. <button data-a="go" data-v="people" style="text-decoration:underline;font-weight:700;min-height:44px;padding-inline:6px">Add birthdays</button> to play with your family and friends.</p>'}
     <div><h2 class="count" style="margin-bottom:8px">My stickers. Each month has a new one.</h2><div class="book">${book}</div></div></div>`;
   }
   if(g.finished){
@@ -1232,7 +1291,7 @@ function drawRoad(cv){
   const dpr=Math.min(2,window.devicePixelRatio||1),pw=Math.round(W*dpr),ph=Math.round(H*dpr);
   if(cv.width!==pw||cv.height!==ph){cv.width=pw;cv.height=ph}
   const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);
-  const x=dr.x,carX=Math.max(150,W*.24),s=Math.max(.72,Math.min(1.25,Math.min(H/500,W/760)));
+  const x=dr.x,carX=Math.max(150,W*.24),s=Math.max(H<220?.46:.62,Math.min(1.25,Math.min(H/500,W/760)));
   const seg=segAt(x),i=dr.segs.indexOf(seg),oldM=i>0?dr.segs[i-1].m:seg.m,cur=THEMES[seg.m].c,old=THEMES[oldM].c,f=i>0?Math.min(1,(x-seg.x)/420):1;
   const horizon=H*.4,roadTop=H*.55,roadBot=H*.95,laneA=H*.7,laneB=H*.89,sxOf=wx=>wx-x+carX;
   const sky=c.createLinearGradient(0,0,0,horizon);sky.addColorStop(0,mix(old.skyA,cur.skyA,f));sky.addColorStop(1,mix(old.skyB,cur.skyB,f));
@@ -1769,6 +1828,7 @@ function render(){
   if(key!==lastKey){lastKey=key;main.classList.remove('enter');void main.offsetWidth;main.classList.add('enter')}
   const onRoad=view==='drive'&&dr&&dr.step==='road';
   $('#app').classList.toggle('road',!!onRoad);
+  $('#app').classList.toggle('quiz',!!(g&&!g.finished&&(view==='play'||view==='school')));
   const cur=view==='add'||view==='person'||view==='grown'?'people':view==='look'?(lk&&lk.from==='drive'?'drive':'people'):view;
   const tab=(v,icon,label)=>`<button class="${v===cur?'on':''}${v==='cal'?' home':''}" data-a="go" data-v="${v}"><i aria-hidden="true">${icon}</i>${label}</button>`;
   $('#nav').innerHTML=tab('cal','🏠','Home')+tab('people','🎂','Birthdays')+tab('play','⭐','Play')+tab('school','🏫','School')+tab('drive','🚗','Drive');
