@@ -1,0 +1,10 @@
+﻿Kids Calendar Game: sound credits
+
+Piano: Salamander Grand Piano by Alexander Holm, licensed under CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/
+Converted to MP3 and resampled. Packaged as @audio-samples/piano-mp3-velocity8.
+
+Strings, guitar and bass: FluidR3 GM by Frank Wen, MIT License.
+Packaged as soundfont-for-samplers. See LICENSE-FluidR3-sounds.txt.
+
+Fonts: Baloo 2 and Atkinson Hyperlegible, SIL Open Font License. See the fonts folder.
